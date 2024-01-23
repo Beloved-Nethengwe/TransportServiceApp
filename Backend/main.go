@@ -1,9 +1,8 @@
 package main
 
 import (
+	"example/Backend/controllers"
 	"example/Backend/initializers"
-
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,10 +16,23 @@ func init() {
 func main() {
 
 	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
+
+	r.POST("/parents", controllers.ParentsCreate)
+	r.GET("/parents", controllers.ParentsIndex)
+	r.GET("/parents/:id", controllers.ParentsShow)
+	r.PUT("/parents/:id", controllers.PostUpdate)
+
 	r.Run()
 }
+
+// {
+
+// 	"IDNumber": "23",
+// 	"Name": "John",
+// 	"Surname": "Doe",
+// 	"Number": "123456789",
+// 	"Street": "43 Bosbok",
+// 	"City": "Pretoria",
+// 	"CreatedAt": "time.Now()"
+
+// }

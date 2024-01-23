@@ -5,17 +5,18 @@ import (
 )
 
 type Parent struct {
-	ID        string `gorm:"primaryKey"`
+	IDNumber  string `gorm:"primaryKey"`
 	Name      string
 	Surname   string
 	Number    string
 	CreatedAt time.Time
-	Address   Address `gorm:"foreignkey:ParentIDID"`
+	Address   Address `gorm:"foreignkey:ParentID"`
 }
 
 type Address struct {
-	ID        uint `gorm:"primary_key"`
+	ID        string `gorm:"primary_key"`
+	Street    string
 	City      string
-	ParentID  uint
+	ParentID  string
 	CreatedAt time.Time
 }
