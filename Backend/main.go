@@ -21,6 +21,7 @@ func main() {
 	r.GET("/parents", controllers.ParentsIndex)
 	r.GET("/parents/:id", controllers.ParentsShow)
 	r.PUT("/parents/:id", controllers.PostUpdate)
+	r.DELETE("/parents/:id", controllers.PostDelete)
 
 	r.Run()
 }

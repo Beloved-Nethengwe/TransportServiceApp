@@ -72,7 +72,6 @@ func ParentsShow(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"post": post,
 	})
-
 }
 
 func PostUpdate(c *gin.Context) {
@@ -100,9 +99,24 @@ func PostUpdate(c *gin.Context) {
 	initializers.DB.First(&post, id)
 
 	//update it
-	initializers.DB.Model(&body).Updates(models.Parent{IDNumber: body.IDNumber, Name: body.Name, Surname: body.Surname, Number: body.Number, CreatedAt: body.CreatedAt})
-	initializers.DB.Model(&body).Updates(models.Address{ID: addressId.String(), Street: body.Street, City: body.City, ParentID: body.IDNumber, CreatedAt: body.CreatedAt})
+	initializers.DB.Model(&post).Updates(models.Parent{IDNumber: body.IDNumber, Name: body.Name, Surname: body.Surname, Number: body.Number, CreatedAt: body.CreatedAt})
+	initializers.DB.Model(&post).Updates(models.Address{ID: addressId.String(), Street: body.Street, City: body.City, ParentID: body.IDNumber, CreatedAt: body.CreatedAt})
 
 	//Respond with it
+	c.JSON(200, gin.H{
+		"post": post,
+	})
+}
 
+func PostDelete(c *gin.Context) {
+
+	//Get the id off the url
+	id := c.Param("id")
+
+	//Delete the parent
+	initializers.DB.Where("parent_id = ?", id).Delete(&models.Address{})
+	initializers.DB.Where("id_number = ?", id).Delete(&models.Parent{})
+
+	//Respond
+	c.Status(200)
 }
