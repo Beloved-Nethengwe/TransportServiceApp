@@ -20,20 +20,23 @@ func main() {
 	r.POST("/parents", controllers.ParentsCreate)
 	r.GET("/parents", controllers.ParentsIndex)
 	r.GET("/parents/:id", controllers.ParentsShow)
-	r.PUT("/parents/:id", controllers.PostUpdate)
-	r.DELETE("/parents/:id", controllers.PostDelete)
+	r.PUT("/parents/:id", controllers.ParentUpdate)
+	r.DELETE("/parents/:id", controllers.ParentDelete)
+
+	r.POST("/children", controllers.ChildCreate)
+	r.GET("/children", controllers.ViewChildren)
+	r.GET("/children/:id", controllers.ChildById)
+	r.PUT("/children/:id", controllers.UpdateChild)
+	r.DELETE("/children/:id", controllers.DeleteChild)
+
+	r.POST("/driver", controllers.CreateDriver)
+	r.GET("/driver", controllers.ViewDrivers)
+	r.GET("/children/:id", controllers.DriverByID)
+	r.PUT("/children/:id", controllers.UpdateDriver)
+	r.DELETE("/children/:id", controllers.DeleteDriver)
+
+	r.POST("/destination", controllers.CreateDestination)
+	r.DELETE("/destination/:id", controllers.CreateDestination)
 
 	r.Run()
 }
-
-// {
-
-// 	"IDNumber": "23",
-// 	"Name": "John",
-// 	"Surname": "Doe",
-// 	"Number": "123456789",
-// 	"Street": "43 Bosbok",
-// 	"City": "Pretoria",
-// 	"CreatedAt": "time.Now()"
-
-// }

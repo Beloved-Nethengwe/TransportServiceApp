@@ -3,27 +3,22 @@ package controllers
 import (
 	"example/Backend/initializers"
 	"example/Backend/models"
-
-	"github.com/google/uuid"
-
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 func ParentsCreate(c *gin.Context) {
-	addressId := uuid.New()
+	// addressId := uuid.New()
 	//Get data off req body
 	var body struct {
-		IDNumber string
-		Name     string
-		Surname  string
-		Number   string
-
-		Street    string
-		City      string
-		ParentID  string
-		CreatedAt time.Time
+		IDNumber        string
+		Name            string
+		Surname         string
+		CellphoneNumber string
+		Address         string
+		CreatedAt       time.Time
 	}
 
 	c.Bind(&body)
@@ -31,19 +26,22 @@ func ParentsCreate(c *gin.Context) {
 	//Create a parent with address
 
 	// parent := models.Parent{ID: "3", Name: "Beloved", Surname: "Nethengwe", Number: "0813792428", CreatedAt: time.Now()}
-	parent := models.Parent{IDNumber: body.IDNumber, Name: body.Name, Surname: body.Surname, Number: body.Number, CreatedAt: body.CreatedAt}
-	parentAddress := models.Address{ID: addressId.String(), Street: body.Street, City: body.City, ParentID: body.IDNumber, CreatedAt: body.CreatedAt}
+	parent := models.Parent{
+		IDNumber:        body.IDNumber,
+		Name:            body.Name,
+		Surname:         body.Surname,
+		CellphoneNumber: body.CellphoneNumber,
+		Address:         body.Address,
+		CreatedAt:       body.CreatedAt,
+	}
+
 	result := initializers.DB.Create(&parent)
-	addrResult := initializers.DB.Create(&parentAddress)
 
 	if result.Error != nil {
 		c.Status(400)
 		return
 	}
-	if addrResult.Error != nil {
-		c.Status(400)
-		return
-	}
+
 	//Return it
 
 	c.JSON(200, gin.H{
@@ -51,6 +49,7 @@ func ParentsCreate(c *gin.Context) {
 	})
 }
 
+// https://stackoverflow.com/questions/66221270/how-to-join-two-tables-in-gorm
 func ParentsIndex(c *gin.Context) {
 	var posts []models.Parent
 	initializers.DB.Find(&posts)
@@ -66,41 +65,48 @@ func ParentsShow(c *gin.Context) {
 
 	//Get the posts
 	var post models.Parent
-	initializers.DB.First(&post, id)
+	result := initializers.DB.First(&post, id)
 
+	//Error Check
+	if result.Error != nil {
+		// Handle the error, e.g., log it or return an error response
+		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
+		return
+	}
+
+	// Check if any records were deleted
+	if result.RowsAffected == 0 {
+		// No records were found with the specified ID
+		c.JSON(http.StatusNotFound, gin.H{"message": "Record not found"})
+		return
+	}
 	//Respond with them
 	c.JSON(200, gin.H{
 		"post": post,
 	})
 }
 
-func PostUpdate(c *gin.Context) {
+func ParentUpdate(c *gin.Context) {
 	//Get the id off the url
 	id := c.Param("id")
 	//Get trhe data off req body
 	var body struct {
-		IDNumber string
-		Name     string
-		Surname  string
-		Number   string
-
-		Street    string
-		City      string
-		ParentID  string
-		CreatedAt time.Time
+		IDNumber        string
+		Name            string
+		Surname         string
+		CellphoneNumber string
+		Address         string
+		CreatedAt       time.Time
 	}
 
 	c.Bind(&body)
-
-	addressId := uuid.New()
 
 	//Find the post where updating
 	var post models.Parent
 	initializers.DB.First(&post, id)
 
 	//update it
-	initializers.DB.Model(&post).Updates(models.Parent{IDNumber: body.IDNumber, Name: body.Name, Surname: body.Surname, Number: body.Number, CreatedAt: body.CreatedAt})
-	initializers.DB.Model(&post).Updates(models.Address{ID: addressId.String(), Street: body.Street, City: body.City, ParentID: body.IDNumber, CreatedAt: body.CreatedAt})
+	initializers.DB.Model(&post).Updates(models.Parent{IDNumber: body.IDNumber, Name: body.Name, Surname: body.Surname, CellphoneNumber: body.CellphoneNumber, Address: body.Address, CreatedAt: body.CreatedAt})
 
 	//Respond with it
 	c.JSON(200, gin.H{
@@ -108,14 +114,29 @@ func PostUpdate(c *gin.Context) {
 	})
 }
 
-func PostDelete(c *gin.Context) {
+func ParentDelete(c *gin.Context) {
 
 	//Get the id off the url
 	id := c.Param("id")
 
 	//Delete the parent
-	initializers.DB.Where("parent_id = ?", id).Delete(&models.Address{})
-	initializers.DB.Where("id_number = ?", id).Delete(&models.Parent{})
+	// Attempt to delete the parent
+
+	result := initializers.DB.Where("id = ?", id).Delete(&models.Parent{})
+
+	// Check for errors
+	if result.Error != nil {
+		// Handle the error, e.g., log it or return an error response
+		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
+		return
+	}
+
+	// Check if any records were deleted
+	if result.RowsAffected == 0 {
+		// No records were found with the specified ID
+		c.JSON(http.StatusNotFound, gin.H{"message": "Record not found"})
+		return
+	}
 
 	//Respond
 	c.Status(200)
