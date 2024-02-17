@@ -18,6 +18,8 @@ func CreateDriver(c *gin.Context) {
 		CellphoneNumber       string
 		Image                 string
 		CarRegistrationNumber string
+		Email                 string
+		Password              string
 		CreatedAt             time.Time
 	}
 	c.Bind(&body)
@@ -29,6 +31,8 @@ func CreateDriver(c *gin.Context) {
 		CellphoneNumber:       body.CellphoneNumber,
 		Image:                 body.Image,
 		CarRegistrationNumber: body.CarRegistrationNumber,
+		Email:                 body.Email,
+		Password:              body.Password,
 		CreatedAt:             body.CreatedAt,
 	}
 

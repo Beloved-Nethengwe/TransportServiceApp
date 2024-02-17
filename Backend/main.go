@@ -31,9 +31,9 @@ func main() {
 
 	r.POST("/driver", controllers.CreateDriver)
 	r.GET("/driver", controllers.ViewDrivers)
-	r.GET("/children/:id", controllers.DriverByID)
-	r.PUT("/children/:id", controllers.UpdateDriver)
-	r.DELETE("/children/:id", controllers.DeleteDriver)
+	r.GET("/driver/:id", controllers.DriverByID)
+	r.PUT("/driver/:id", controllers.UpdateDriver)
+	r.DELETE("/driver/:id", controllers.DeleteDriver)
 
 	r.POST("/destination", controllers.CreateDestination)
 	r.DELETE("/destination/:id", controllers.CreateDestination)

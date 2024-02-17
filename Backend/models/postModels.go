@@ -11,6 +11,8 @@ type Parent struct {
 	Surname         string
 	CellphoneNumber string
 	Address         string
+	Email           string
+	Password        string
 	CreatedAt       time.Time
 }
 type Child struct {
@@ -33,6 +35,8 @@ type Driver struct {
 	CellphoneNumber       string
 	Image                 string
 	CarRegistrationNumber string
+	Email                 string
+	Password              string
 	CreatedAt             time.Time
 }
 
