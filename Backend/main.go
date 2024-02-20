@@ -4,6 +4,7 @@ import (
 	"example/Backend/controllers"
 	"example/Backend/initializers"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,28 +16,33 @@ func init() {
 
 func main() {
 
-	r := gin.Default()
+	router := gin.Default()
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowOrigins = []string{"http://localhost:4200"} // Replace with your allowed origins
+	corsConfig.AllowCredentials = true                          // To allow sending tokens to the server
+	corsConfig.AddAllowMethods("OPTIONS")                       // Enable OPTIONS method for ReactJS
+	router.Use(cors.New(corsConfig))
 
-	r.POST("/parents", controllers.ParentsCreate)
-	r.GET("/parents", controllers.ParentsIndex)
-	r.GET("/parents/:id", controllers.ParentsShow)
-	r.PUT("/parents/:id", controllers.ParentUpdate)
-	r.DELETE("/parents/:id", controllers.ParentDelete)
+	router.POST("/parents", controllers.ParentsCreate)
+	router.GET("/parents", controllers.ParentsIndex)
+	router.GET("/parents/:id", controllers.ParentsShow)
+	router.PUT("/parents/:id", controllers.ParentUpdate)
+	router.DELETE("/parents/:id", controllers.ParentDelete)
 
-	r.POST("/children", controllers.ChildCreate)
-	r.GET("/children", controllers.ViewChildren)
-	r.GET("/children/:id", controllers.ChildById)
-	r.PUT("/children/:id", controllers.UpdateChild)
-	r.DELETE("/children/:id", controllers.DeleteChild)
+	router.POST("/children", controllers.ChildCreate)
+	router.GET("/children", controllers.ViewChildren)
+	router.GET("/children/:id", controllers.ChildById)
+	router.PUT("/children/:id", controllers.UpdateChild)
+	router.DELETE("/children/:id", controllers.DeleteChild)
 
-	r.POST("/driver", controllers.CreateDriver)
-	r.GET("/driver", controllers.ViewDrivers)
-	r.GET("/driver/:id", controllers.DriverByID)
-	r.PUT("/driver/:id", controllers.UpdateDriver)
-	r.DELETE("/driver/:id", controllers.DeleteDriver)
+	router.POST("/driver", controllers.CreateDriver)
+	router.GET("/driver", controllers.ViewDrivers)
+	router.GET("/driver/:id", controllers.DriverByID)
+	router.PUT("/driver/:id", controllers.UpdateDriver)
+	router.DELETE("/driver/:id", controllers.DeleteDriver)
 
-	r.POST("/destination", controllers.CreateDestination)
-	r.DELETE("/destination/:id", controllers.CreateDestination)
+	router.POST("/destination", controllers.CreateDestination)
+	router.DELETE("/destination/:id", controllers.CreateDestination)
 
-	r.Run()
+	router.Run()
 }

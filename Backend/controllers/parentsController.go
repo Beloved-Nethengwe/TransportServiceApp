@@ -3,6 +3,7 @@ package controllers
 import (
 	"example/Backend/initializers"
 	"example/Backend/models"
+
 	"net/http"
 	"time"
 
@@ -45,7 +46,6 @@ func ParentsCreate(c *gin.Context) {
 		c.Status(400)
 		return
 	}
-
 	//Return it
 
 	c.JSON(200, gin.H{
