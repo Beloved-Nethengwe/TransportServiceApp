@@ -17,7 +17,7 @@ func ChildCreate(c *gin.Context) {
 		EmergContact string
 		PickUp       string
 		Destination  string
-		ParentID     int
+		ParentID     string
 	}
 	c.Bind(&body)
 
@@ -110,7 +110,7 @@ func UpdateChild(c *gin.Context) {
 		EmergContact string
 		PickUp       string
 		Destination  string
-		ParentID     int
+		ParentID     string
 	}
 
 	c.Bind(&body)

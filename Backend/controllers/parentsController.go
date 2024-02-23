@@ -14,6 +14,7 @@ func ParentsCreate(c *gin.Context) {
 	// addressId := uuid.New()
 	//Get data off req body
 	var body struct {
+		ID              string
 		IDNumber        string
 		Name            string
 		Surname         string
@@ -30,6 +31,7 @@ func ParentsCreate(c *gin.Context) {
 
 	// parent := models.Parent{ID: "3", Name: "Beloved", Surname: "Nethengwe", Number: "0813792428", CreatedAt: time.Now()}
 	parent := models.Parent{
+		ID:              body.ID,
 		IDNumber:        body.IDNumber,
 		Name:            body.Name,
 		Surname:         body.Surname,

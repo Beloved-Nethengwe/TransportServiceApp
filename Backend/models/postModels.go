@@ -5,7 +5,7 @@ import (
 )
 
 type Parent struct {
-	ID              int `gorm:"primaryKey;autoIncrement"`
+	ID              string `gorm:"primaryKey"`
 	IDNumber        string
 	Name            string
 	Surname         string
@@ -24,7 +24,7 @@ type Child struct {
 	PickUp       string
 	Destination  string
 	//RelationShips
-	ParentID int
+	ParentID string
 	Parent   Parent `gorm:"foreignkey:ParentID;references:ID"`
 }
 type Driver struct {
