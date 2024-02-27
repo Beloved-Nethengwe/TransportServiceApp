@@ -31,7 +31,8 @@ func main() {
 
 	router.POST("/children", controllers.ChildCreate)
 	router.GET("/children", controllers.ViewChildren)
-	router.GET("/children/:id", controllers.ChildById)
+	router.GET("/children/:parent_id", controllers.GetChildrenByParentID)
+	// router.GET("/children/:id", controllers.ChildById)
 	router.PUT("/children/:id", controllers.UpdateChild)
 	router.DELETE("/children/:id", controllers.DeleteChild)
 
