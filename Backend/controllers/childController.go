@@ -3,10 +3,8 @@ package controllers
 import (
 	"example/Backend/initializers"
 	"example/Backend/models"
-	"log"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func ChildCreate(c *gin.Context) {
@@ -31,7 +29,6 @@ func ChildCreate(c *gin.Context) {
 		Destination:  body.Destination,
 		ParentID:     body.ParentID,
 	}
-	log.Fatal()
 	result := initializers.DB.Create(&child)
 
 	if result.Error != nil {
@@ -91,8 +88,8 @@ func GetChildrenByParentID(c *gin.Context) {
 		"ok":       true,
 		"children": children,
 	})
-
 }
+
 func DeleteChild(c *gin.Context) {
 	id := c.Param("id")
 
