@@ -7,7 +7,7 @@ import (
 type Parent struct {
 	ID              string `gorm:"primaryKey"`
 	IDNumber        string
-	Name            string
+	Name            string `gorm:"alias:parentName"`
 	Surname         string
 	CellphoneNumber string
 	Address         string
@@ -16,8 +16,8 @@ type Parent struct {
 	CreatedAt       time.Time
 }
 type Child struct {
-	ID           int `gorm:"primaryKey;autoIncrement"`
-	Name         string
+	ID           int    `gorm:"primaryKey;autoIncrement"`
+	Name         string `gorm:"alias:childName"`
 	Surname      string
 	Allergy      string
 	EmergContact string
@@ -54,7 +54,7 @@ type RequestBridge struct {
 	Status string
 
 	//RelationShips
-	ParentID int
+	ParentID string
 	Parent   Parent `gorm:"foreignkey:ParentID;references:ID"`
 	DriverID int
 	Driver   Driver `gorm:"foreignkey:DriverID;references:ID"`

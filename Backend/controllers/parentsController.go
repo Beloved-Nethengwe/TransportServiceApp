@@ -3,6 +3,7 @@ package controllers
 import (
 	"example/Backend/initializers"
 	"example/Backend/models"
+	"strconv"
 
 	"net/http"
 	"time"
@@ -146,4 +147,34 @@ func ParentDelete(c *gin.Context) {
 
 	//Respond
 	c.Status(200)
+}
+
+func RequestChildTransport(c *gin.Context) {
+	child_id := c.Param("child_id")
+	driver_id := c.Param("driver_id")
+	parent_id := c.Param("parent_id")
+	status := "Requested"
+
+	childId, err := strconv.Atoi(child_id)
+	driverId, err := strconv.Atoi(driver_id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+	}
+
+	transportRequest := models.RequestBridge{
+		Status:   status,
+		ParentID: parent_id,
+		DriverID: driverId,
+
+		ChildID: childId,
+	}
+
+	result := initializers.DB.Create(&transportRequest)
+
+	if result.Error != nil {
+		c.Status(400)
+		return
+	}
+
 }

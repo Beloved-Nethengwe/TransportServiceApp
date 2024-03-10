@@ -24,6 +24,7 @@ func main() {
 	router.Use(cors.New(corsConfig))
 
 	router.POST("/parents", controllers.ParentsCreate)
+	router.POST("request-transport/:child_id/:driver_id/:parent_id", controllers.RequestChildTransport)
 	router.GET("/parents", controllers.ParentsIndex)
 	router.GET("/parents/:id", controllers.ParentsShow)
 	router.PUT("/parents/:id", controllers.ParentUpdate)
@@ -31,14 +32,16 @@ func main() {
 
 	router.POST("/children", controllers.ChildCreate)
 	router.GET("/children", controllers.ViewChildren)
-	router.GET("/children/:parent_id", controllers.GetChildrenByParentID)
-	// router.GET("/children/:id", controllers.ChildById)
+	router.GET("/children/parent/:parent_id", controllers.GetChildrenByParentID)
+	router.GET("/children/:id", controllers.ChildById)
 	router.PUT("/children/:id", controllers.UpdateChild)
 	router.DELETE("/children/:id", controllers.DeleteChild)
 
 	router.POST("/driver", controllers.CreateDriver)
 	router.GET("/driver", controllers.ViewDrivers)
 	router.GET("/driver/:id", controllers.DriverByID)
+	router.GET("/driver/transport-request/:id", controllers.ViewTransportRequests)
+	router.POST("/driver/accept-request/:child_id/:driver_id", controllers.UpdateRequestStatus)
 	router.PUT("/driver/:id", controllers.UpdateDriver)
 	router.DELETE("/driver/:id", controllers.DeleteDriver)
 

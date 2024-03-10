@@ -4,6 +4,7 @@ import (
 	"example/Backend/initializers"
 	"example/Backend/models"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -130,6 +131,64 @@ func UpdateDriver(c *gin.Context) {
 		CarRegistrationNumber: body.CarRegistrationNumber,
 		CreatedAt:             body.CreatedAt,
 	})
+
+	c.JSON(200, gin.H{
+		"post": post,
+	})
+}
+
+func ViewTransportRequests(c *gin.Context) {
+	driver_id := c.Param("id")
+
+	var transportRequest []struct {
+		Name            string
+		Allergy         string
+		Destination     string
+		PickUp          string
+		P_Name          string
+		CellphoneNumber string
+		Email           string
+		IDNumber        string
+	}
+
+	if err := initializers.DB.Raw(`
+    SELECT c.name, allergy, destination, pick_up,
+    p_name, cellphone_number, email
+    FROM children c
+    INNER JOIN request_bridges rb ON c.id = rb.child_id
+    INNER JOIN parents p ON rb.parent_id = p.id
+    WHERE rb.driver_id = ?`, driver_id).Scan(&transportRequest).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"ok":       true,
+		"requests": transportRequest,
+	})
+}
+
+func UpdateRequestStatus(c *gin.Context) {
+	driver_id := c.Param("driver_id")
+	child_id := c.Param("child_id")
+
+	childId, err := strconv.Atoi(child_id)
+	driverId, err := strconv.Atoi(driver_id)
+	requestStatus := "Assigned"
+
+	var post models.RequestBridge
+	initializers.DB.First(&post, &driverId, &childId)
+
+	initializers.DB.Model(&post).
+		Where("driver_id", &driverId).
+		Where("child_id", &childId).
+		Updates(models.RequestBridge{
+			Status: requestStatus,
+		})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+	}
 
 	c.JSON(200, gin.H{
 		"post": post,
