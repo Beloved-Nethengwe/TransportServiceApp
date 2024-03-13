@@ -15,6 +15,6 @@ func init() {
 
 func main() {
 
-	initializers.DB.AutoMigrate(&models.Parent{}, &models.Driver{}, &models.Child{}, &models.RequestBridge{}, &models.Destination{})
+	initializers.DB.AutoMigrate(&models.Parent{}, &models.Driver{}, &models.Child{}, &models.RequestBridge{}, &models.Destination{}, &models.Role{})
 
 }

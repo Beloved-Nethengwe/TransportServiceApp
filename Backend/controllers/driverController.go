@@ -13,28 +13,28 @@ import (
 func CreateDriver(c *gin.Context) {
 
 	var body struct {
+		ID                    string
 		IDNumber              string
 		Name                  string
 		Surname               string
 		CellphoneNumber       string
 		Image                 string
 		CarRegistrationNumber string
-		Email                 string
-		Password              string
 		CreatedAt             time.Time
+		RoleID                int
 	}
 	c.Bind(&body)
 
 	driver := models.Driver{
+		ID:                    body.ID,
 		IDNumber:              body.IDNumber,
 		Name:                  body.Name,
 		Surname:               body.Surname,
 		CellphoneNumber:       body.CellphoneNumber,
 		Image:                 body.Image,
 		CarRegistrationNumber: body.CarRegistrationNumber,
-		Email:                 body.Email,
-		Password:              body.Password,
 		CreatedAt:             body.CreatedAt,
+		RoleID:                body.RoleID,
 	}
 
 	result := initializers.DB.Create(&driver)

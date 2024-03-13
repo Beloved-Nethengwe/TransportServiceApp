@@ -3,6 +3,7 @@ package controllers
 import (
 	"example/Backend/initializers"
 	"example/Backend/models"
+	"fmt"
 	"strconv"
 
 	"net/http"
@@ -12,43 +13,60 @@ import (
 )
 
 func ParentsCreate(c *gin.Context) {
-	// addressId := uuid.New()
-	//Get data off req body
+
 	var body struct {
 		ID              string
 		IDNumber        string
-		Name            string
+		PName           string
 		Surname         string
 		CellphoneNumber string
 		Address         string
-		Email           string
-		Password        string
 		CreatedAt       time.Time
+		RoleID          int
 	}
 
 	c.Bind(&body)
 
-	//Create a parent with address
+	tx := initializers.DB.Begin()
+	defer func() {
+		if err := recover(); err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Transaction failed"})
+			return
+		}
+	}()
 
 	// parent := models.Parent{ID: "3", Name: "Beloved", Surname: "Nethengwe", Number: "0813792428", CreatedAt: time.Now()}
 	parent := models.Parent{
 		ID:              body.ID,
 		IDNumber:        body.IDNumber,
-		Name:            body.Name,
+		PName:           body.PName,
 		Surname:         body.Surname,
 		CellphoneNumber: body.CellphoneNumber,
 		Address:         body.Address,
-		Email:           body.Email,
-		Password:        body.Password,
 		CreatedAt:       body.CreatedAt,
+		RoleID:          body.RoleID,
 	}
 
-	result := initializers.DB.Create(&parent)
-
-	if result.Error != nil {
-		c.Status(400)
+	if err := tx.Create(&parent).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Error creating parent: %v", err)})
 		return
 	}
+
+	tx.Commit()
+	// result := initializers.DB.Create(&parent)
+	// roleResult := initializers.DB.Create(&role)
+
+	// if result.Error != nil {
+	// 	c.Status(400)
+	// 	return
+	// }
+
+	// if roleResult.Error != nil {
+	// 	c.Status(400)
+	// 	return
+	// }
 	//Return it
 
 	c.JSON(200, gin.H{
@@ -71,8 +89,8 @@ func ParentsShow(c *gin.Context) {
 	id := c.Param("id")
 
 	//Get the posts
-	var post models.Parent
-	result := initializers.DB.First(&post, id)
+	var parent models.Parent
+	result := initializers.DB.First(&parent, &id)
 
 	//Error Check
 	if result.Error != nil {
@@ -89,7 +107,7 @@ func ParentsShow(c *gin.Context) {
 	}
 	//Respond with them
 	c.JSON(200, gin.H{
-		"post": post,
+		"parent": parent,
 	})
 }
 
@@ -99,7 +117,7 @@ func ParentUpdate(c *gin.Context) {
 	//Get trhe data off req body
 	var body struct {
 		IDNumber        string
-		Name            string
+		PName           string
 		Surname         string
 		CellphoneNumber string
 		Address         string
@@ -113,7 +131,7 @@ func ParentUpdate(c *gin.Context) {
 	initializers.DB.First(&post, id)
 
 	//update it
-	initializers.DB.Model(&post).Updates(models.Parent{IDNumber: body.IDNumber, Name: body.Name, Surname: body.Surname, CellphoneNumber: body.CellphoneNumber, Address: body.Address, CreatedAt: body.CreatedAt})
+	initializers.DB.Model(&post).Updates(models.Parent{IDNumber: body.IDNumber, PName: body.PName, Surname: body.Surname, CellphoneNumber: body.CellphoneNumber, Address: body.Address, CreatedAt: body.CreatedAt})
 
 	//Respond with it
 	c.JSON(200, gin.H{
@@ -156,7 +174,6 @@ func RequestChildTransport(c *gin.Context) {
 	status := "Requested"
 
 	childId, err := strconv.Atoi(child_id)
-	driverId, err := strconv.Atoi(driver_id)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
@@ -165,7 +182,7 @@ func RequestChildTransport(c *gin.Context) {
 	transportRequest := models.RequestBridge{
 		Status:   status,
 		ParentID: parent_id,
-		DriverID: driverId,
+		DriverID: driver_id,
 
 		ChildID: childId,
 	}
