@@ -195,3 +195,31 @@ func RequestChildTransport(c *gin.Context) {
 	}
 
 }
+
+func SearchChildTransportByDestination(c *gin.Context) {
+	child_destination := c.Param("child_destination")
+
+	var transportByDestination []struct {
+		ID              string
+		IDNumber        string
+		Name            string
+		Surname         string
+		CellphoneNumber string
+		SchoolName      string
+	}
+
+	if err := initializers.DB.Raw(
+		`SELECT d.id,d.id_number,d."name",d.surname,d.cellphone_number,d2.school_name 
+		FROM public.drivers d 
+		INNER JOIN destinations d2 ON d2.driver_id  = d.id
+		where d2.school_name = ? `, child_destination).Scan(&transportByDestination).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"ok":                   true,
+		"transportDestination": transportByDestination,
+	})
+
+}
