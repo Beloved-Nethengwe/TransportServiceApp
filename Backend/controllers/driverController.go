@@ -141,23 +141,54 @@ func ViewTransportRequests(c *gin.Context) {
 	driver_id := c.Param("id")
 
 	var transportRequest []struct {
+		Id              string
 		Name            string
 		Allergy         string
 		Destination     string
 		PickUp          string
 		P_Name          string
 		CellphoneNumber string
-		Email           string
 		IDNumber        string
 	}
 
 	if err := initializers.DB.Raw(`
-    SELECT c.name, allergy, destination, pick_up,
-    p_name, cellphone_number, email
+    SELECT c.Id ,c.name, allergy, destination, pick_up,
+    p_name, cellphone_number
     FROM children c
     INNER JOIN request_bridges rb ON c.id = rb.child_id
     INNER JOIN parents p ON rb.parent_id = p.id
-    WHERE rb.driver_id = ?`, driver_id).Scan(&transportRequest).Error; err != nil {
+    WHERE rb.driver_id = ? and rb.status ='Pending'`, driver_id).Scan(&transportRequest).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"ok":       true,
+		"requests": transportRequest,
+	})
+}
+
+func ViewYourChildDownline(c *gin.Context) {
+	driver_id := c.Param("id")
+
+	var transportRequest []struct {
+		Id              string
+		Name            string
+		Allergy         string
+		Destination     string
+		PickUp          string
+		P_Name          string
+		CellphoneNumber string
+		IDNumber        string
+	}
+
+	if err := initializers.DB.Raw(`
+    SELECT c.Id ,c.name, allergy, destination, pick_up,
+    p_name, cellphone_number
+    FROM children c
+    INNER JOIN request_bridges rb ON c.id = rb.child_id
+    INNER JOIN parents p ON rb.parent_id = p.id
+    WHERE rb.driver_id = ? and rb.status ='Assigned'`, driver_id).Scan(&transportRequest).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -173,14 +204,14 @@ func UpdateRequestStatus(c *gin.Context) {
 	child_id := c.Param("child_id")
 
 	childId, err := strconv.Atoi(child_id)
-	driverId, err := strconv.Atoi(driver_id)
+	// driverId, err := strconv.Atoi(driver_id)
 	requestStatus := "Assigned"
 
 	var post models.RequestBridge
-	initializers.DB.First(&post, &driverId, &childId)
+	initializers.DB.First(&post, &driver_id, &childId)
 
 	initializers.DB.Model(&post).
-		Where("driver_id", &driverId).
+		Where("driver_id", &driver_id).
 		Where("child_id", &childId).
 		Updates(models.RequestBridge{
 			Status: requestStatus,

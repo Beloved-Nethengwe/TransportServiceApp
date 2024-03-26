@@ -76,7 +76,8 @@ func ChildById(c *gin.Context) {
 	})
 }
 
-func GetChildrenByParentID(c *gin.Context) {
+// Not used
+/*func GetChildrenByParentID(c *gin.Context) {
 	parentID := c.Param("parent_id")
 
 	var children []models.Child
@@ -88,6 +89,79 @@ func GetChildrenByParentID(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"ok":       true,
 		"children": children,
+	})
+}*/
+
+func GetChildrenWithNoRequestByParentID(c *gin.Context) {
+	parentID := c.Param("parent_id")
+
+	var children []models.Child
+
+	if err := initializers.DB.Raw(
+		`select *  from children c 
+		left outer join request_bridges rb on c.id =rb.child_id 
+		where rb.child_id is null and c.parent_id = ? `, parentID).Scan(&children).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"ok":                   true,
+		"transportDestination": children,
+	})
+}
+
+func GetChildrenWithPendingRequestByParentID(c *gin.Context) {
+	parentID := c.Param("parent_id")
+
+	var requestedStatus []struct {
+		ID          int
+		Name        string
+		Surname     string
+		Allergy     string
+		PickUp      string
+		Destination string
+		Status      string
+	}
+
+	if err := initializers.DB.Raw(
+		`select c.id, c."name", c.surname,c.allergy ,c.pick_up, c.destination, rb.status  from children c 
+		inner join request_bridges rb on c.id =rb.child_id 
+		where rb.status = 'Pending' and c.parent_id = ? `, parentID).Scan(&requestedStatus).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"ok":                 true,
+		"childRequestStatus": requestedStatus,
+	})
+}
+
+func GetChildrenWithAssignedRequestByParentID(c *gin.Context) {
+	parentID := c.Param("parent_id")
+
+	var requestedStatus []struct {
+		ID          int
+		Name        string
+		Surname     string
+		Allergy     string
+		PickUp      string
+		Destination string
+		Status      string
+	}
+
+	if err := initializers.DB.Raw(
+		`select c.id, c."name", c.surname,c.allergy ,c.pick_up, c.destination, rb.status  from children c 
+		inner join request_bridges rb on c.id =rb.child_id 
+		where rb.status = 'Assigned' and c.parent_id = ? `, parentID).Scan(&requestedStatus).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"ok":                 true,
+		"childRequestStatus": requestedStatus,
 	})
 }
 

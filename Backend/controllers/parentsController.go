@@ -4,9 +4,9 @@ import (
 	"example/Backend/initializers"
 	"example/Backend/models"
 	"fmt"
-	"strconv"
-
 	"net/http"
+	"net/smtp"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -171,7 +171,7 @@ func RequestChildTransport(c *gin.Context) {
 	child_id := c.Param("child_id")
 	driver_id := c.Param("driver_id")
 	parent_id := c.Param("parent_id")
-	status := "Requested"
+	status := "Pending"
 
 	childId, err := strconv.Atoi(child_id)
 
@@ -222,4 +222,33 @@ func SearchChildTransportByDestination(c *gin.Context) {
 		"transportDestination": transportByDestination,
 	})
 
+}
+
+func SendMailToDriver(c *gin.Context) {
+	driver_mail := c.Param("driver_mail")
+	child_name := c.Param("child_name")
+
+	auth := smtp.PlainAuth(
+		"",
+		"belovednethengwe28@gmail.com",
+		"icjy gjmh impc jssk",
+		"smtp.gmail.com",
+	)
+
+	msg := "Subject: Transport Request\nYou have a new request for child " + child_name
+
+	err := smtp.SendMail(
+		"smtp.gmail.com:587",
+		auth,
+		"belovednethengwe28@gmail.com",
+		[]string{driver_mail},
+		[]byte(msg),
+	)
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to send email"})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Email sent successfully"})
 }
