@@ -21,6 +21,7 @@ func ParentsCreate(c *gin.Context) {
 		Surname         string
 		CellphoneNumber string
 		Address         string
+		Email           string
 		CreatedAt       time.Time
 		RoleID          int
 	}
@@ -44,6 +45,7 @@ func ParentsCreate(c *gin.Context) {
 		Surname:         body.Surname,
 		CellphoneNumber: body.CellphoneNumber,
 		Address:         body.Address,
+		Email:           body.Email,
 		CreatedAt:       body.CreatedAt,
 		RoleID:          body.RoleID,
 	}

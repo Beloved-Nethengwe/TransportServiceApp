@@ -11,6 +11,7 @@ type Parent struct {
 	Surname         string
 	CellphoneNumber string
 	Address         string
+	Email           string
 	CreatedAt       time.Time
 	RoleID          int
 	Role            Role `gorm:"foreignkey:RoleID;references:ID"`
@@ -40,6 +41,7 @@ type Driver struct {
 	CellphoneNumber       string
 	Image                 string
 	CarRegistrationNumber string
+	Email                 string
 	CreatedAt             time.Time
 	RoleID                int
 	Role                  Role `gorm:"foreignkey:RoleID;references:ID"`
