@@ -25,7 +25,6 @@ func main() {
 	router.POST("/parents", controllers.ParentsCreate)
 	router.POST("/request-transport/:child_id/:driver_id/:parent_id", controllers.RequestChildTransport)
 	router.GET("/parents", controllers.ParentsIndex)
-	router.POST("/parents/sendmail/:driver_mail/:child_name", controllers.SendMailToDriver)
 	router.PUT("/parents/:id", controllers.ParentUpdate)
 	router.GET("/parents/:id", controllers.ParentsShow)
 	router.DELETE("/parents/:id", controllers.ParentDelete)
@@ -47,8 +46,15 @@ func main() {
 	router.POST("/driver/accept-request/:child_id/:driver_id", controllers.UpdateRequestStatus)
 	router.PUT("/driver/:id", controllers.UpdateDriver)
 	router.DELETE("/driver/:id", controllers.DeleteDriver)
+	router.GET("/driver/commuters/:id", controllers.ViewYourChildDownline)
 
 	router.POST("/destination", controllers.CreateDestination)
 	router.DELETE("/destination/:id", controllers.CreateDestination)
+
+	router.POST("/parents/sendmail/:driver_mail/:child_name", controllers.SendMailToDriver)
+	router.POST("/driver/sendmail/:parent_mail/:child_name", controllers.SendMailToParent)
+
+	//error handling
+	router.GET("/user/exists", controllers.CheckIfUserAlreadyExist)
 	router.Run()
 }

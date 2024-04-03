@@ -93,7 +93,7 @@ func ParentsShow(c *gin.Context) {
 	//Get the posts
 	var parent models.Parent
 	result := initializers.DB.First(&parent, &id)
-
+	fmt.Print(result)
 	//Error Check
 	if result.Error != nil {
 		// Handle the error, e.g., log it or return an error response
@@ -207,11 +207,12 @@ func SearchChildTransportByDestination(c *gin.Context) {
 		Name            string
 		Surname         string
 		CellphoneNumber string
+		Email           string
 		SchoolName      string
 	}
 
 	if err := initializers.DB.Raw(
-		`SELECT d.id,d.id_number,d."name",d.surname,d.cellphone_number,d2.school_name 
+		`SELECT d.id,d.id_number,d."name",d.surname,d.cellphone_number,d.email,d2.school_name 
 		FROM public.drivers d 
 		INNER JOIN destinations d2 ON d2.driver_id  = d.id
 		where d2.school_name = ? `, child_destination).Scan(&transportByDestination).Error; err != nil {
@@ -237,7 +238,7 @@ func SendMailToDriver(c *gin.Context) {
 		"smtp.gmail.com",
 	)
 
-	msg := "Subject: Transport Request\nYou have a new request for child " + child_name
+	msg := "Subject: Transport Request\nYou have a new request for child, " + child_name
 
 	err := smtp.SendMail(
 		"smtp.gmail.com:587",
